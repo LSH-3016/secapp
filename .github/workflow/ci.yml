@@ -1,0 +1,45 @@
+name: ci
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks (시크릿 검사)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Semgrep (코드 검사)
+        run: pipx run semgrep scan --config p/default --error --metrics=off .
+
+  build:
+    needs: scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: 이미지 이름 (소문자)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+      - name: 빌드
+        run: docker build -t $IMAGE:${{ github.sha }} .
+      - name: Trivy (이미지 취약점 검사)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
+      - name: GHCR 로그인
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: 푸시
+        run: docker push $IMAGE:${{ github.sha }}
