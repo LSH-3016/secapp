@@ -4,6 +4,7 @@ const { createClient } = require('redis');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+// nosemgrep: javascript.express.security.audit.express-check-csurf-middleware-usage.express-check-csurf-middleware-usage -- JWT를 Authorization 헤더로 사용, 쿠키 미사용
 const app = express();
 app.use(express.json());
 
