@@ -1,4 +1,5 @@
-FROM node:20.18-alpine
+FROM node:24-alpine
+RUN apk upgrade --no-cache
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev \
