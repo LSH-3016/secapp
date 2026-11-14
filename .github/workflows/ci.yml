@@ -11,6 +11,10 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 #v4
         with:
@@ -28,6 +32,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 #v4
       - name: 이미지 이름 (소문자)
