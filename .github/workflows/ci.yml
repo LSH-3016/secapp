@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 #v4
       - name: Build info (lab action)
-        uses: LSH-3016/build-info-action@v1
+        uses: LSH-3016/build-info-action@v1 # nosemgrep: yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag
       - name: 이미지 이름 (소문자)
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
       - name: 빌드
